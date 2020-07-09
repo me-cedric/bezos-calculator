@@ -1,16 +1,11 @@
 package eu.cedricmeyer.myapplication
 
-import android.app.Dialog
-import android.content.res.ColorStateList
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.Window
+import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.TextView
-import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.activity_main.*
 import java.math.BigDecimal
 
@@ -46,21 +41,6 @@ class MainActivity : AppCompatActivity(), OnAlertOneButtonClickListener {
         }
 
         floatingActionButton.isEnabled = editText1.text.toString().trim().isNotEmpty()
-        floatingActionButton.setOnClickListener {
-            val spinnerVal = spinner.selectedItem.toString()
-            var modifier: Double = 1.0
-            when(spinnerVal) {
-                "Euro" -> modifier = CurrencyValue.Euro.value
-                "Dollar" -> modifier = CurrencyValue.Dollar.value
-            }
-            val yourPrice: Double = editText1.text.toString().toDouble() / (bezosWorth * modifier)
-            customDialogOneButton.show(
-                title = "This has a cost of",
-                text = "${BigDecimal(yourPrice).toPlainString()} Jeff Bezos",
-                dialogId = 1,
-                buttonName = "Bah... it's not that much then."
-            )
-        }
 
         editText1.addTextChangedListener(object: TextWatcher {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -75,5 +55,21 @@ class MainActivity : AppCompatActivity(), OnAlertOneButtonClickListener {
                 // Auto-generated method stub
             }
         })
+    }
+
+    fun onCompute(view: View) {
+        val spinnerVal = spinner.selectedItem.toString()
+        var modifier: Double = 1.0
+        when(spinnerVal) {
+            "Euro" -> modifier = CurrencyValue.Euro.value
+            "Dollar" -> modifier = CurrencyValue.Dollar.value
+        }
+        val yourPrice: Double = editText1.text.toString().toDouble() / (bezosWorth * modifier)
+        customDialogOneButton.show(
+            title = "This has a cost of",
+            text = "${BigDecimal(yourPrice).toPlainString()} Jeff Bezos",
+            dialogId = 1,
+            buttonName = "Bah... it's not that much then."
+        )
     }
 }
