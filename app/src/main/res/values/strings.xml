@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Bezos calculator</string>
+    <string name="hello_text">Cost</string>
+    <string name="currency">Currency</string>
+    <string name="input_text">How much</string>
+    <string name="ok">OK</string>
+</resources>
