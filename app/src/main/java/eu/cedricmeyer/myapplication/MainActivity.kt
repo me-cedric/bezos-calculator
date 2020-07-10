@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity(), OnAlertOneButtonClickListener {
             }
         })
     }
-    
+
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
