@@ -29,6 +29,8 @@ class MainActivity : AppCompatActivity(), OnAlertOneButtonClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         ArrayAdapter.createFromResource(
             this,
             R.array.currency_array,
@@ -55,6 +57,11 @@ class MainActivity : AppCompatActivity(), OnAlertOneButtonClickListener {
                 // Auto-generated method stub
             }
         })
+    }
+    
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     fun onCompute(view: View) {
