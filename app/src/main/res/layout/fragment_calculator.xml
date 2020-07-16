@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bground"
-    tools:context=".MainActivity">
+    android:id="@+id/frag_calculator"
+    tools:context=".calculator.CalculatorActivity">
 
     <TextView
         android:id="@+id/textView2"
