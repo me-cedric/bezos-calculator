@@ -1,44 +1,25 @@
 package eu.cedricmeyer.myapplication.cgi_bot
 
-interface IAnalyticsConfig {
-    var app: String?
-    var version: String?
-    var debug: Boolean?
-    var plugins: Array<IPlugin>?
-}
-
-interface IPlugin {
-    var name: String
-    var EVENTS: Any?
-    var config: Any?
-    var enabled: Boolean?
-    fun initialize(vararg params: Array<Any>): Any
-    fun page(vararg params: Array<Any>): Any
-    fun track(vararg params: Array<Any>): Any
-    fun identify(vararg params: Array<Any>): Any
-    fun loaded(vararg params: Array<Any>): Any
-    fun ready(vararg params: Array<Any>): Any
-}
-
 interface ICgiBotConfiguration {
-    var chatbots : Array<IChatbot>
-    var language: String?
-    var storage: Any?
-    var analyticsConfig: IAnalyticsConfig?
-    var disableConsole: Boolean?
-    var nextFunctions: Map<String, (nextCodes: Array<String>, variables: Any) -> String>? /*string | Promise<string>*/
+    val chatbots : MutableList<IChatbot>
+    val language: String?
+    val storage: Any?
+    val analyticsConfig: IAnalyticsConfig?
+    val disableConsole: Boolean?
+    val nextFunctions: Map<String, (nextCodes: MutableList<String>, variables: Any) -> String>? /*string | Promise<string>*/
     // ...
 }
 
-class CgiBotConfiguration(conf: ICgiBotConfiguration) : ICgiBotConfiguration {
-    override var chatbots: Array<IChatbot> = conf.chatbots
-    override var language: String? = conf.language ?: "en-US"
-    override var storage: Any? = conf.storage
-    override var analyticsConfig: IAnalyticsConfig? = conf.analyticsConfig
-    override var disableConsole: Boolean? = conf.disableConsole
-    override var nextFunctions: Map<String, (nextCodes: Array<String>, variables: Any) -> String>? = conf.nextFunctions
+class CgiBotConfiguration(
+    override var chatbots: MutableList<IChatbot>,
+    override var language: String? = "en-US",
+    override var storage: Any?,
+    override var analyticsConfig: IAnalyticsConfig?,
+    override var disableConsole: Boolean?,
+    override var nextFunctions: Map<String, (nextCodes: MutableList<String>, variables: Any) -> String>?
+) : ICgiBotConfiguration {
 
-    fun executeNextFunction(nextCodeFunction: String, codes: Array<String>, values: Any): String? {
+    fun executeNextFunction(nextCodeFunction: String, codes: MutableList<String>, values: Any): String? {
         return this.nextFunctions?.get(nextCodeFunction)?.invoke(codes, values)
     }
 }

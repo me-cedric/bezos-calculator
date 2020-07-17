@@ -1,35 +1,35 @@
 package eu.cedricmeyer.myapplication.cgi_bot
 
-interface ChatMessage {
-    var id: String
-    var text: String
-    var translations: Map<String, String>?
-    var epoch: Number?
-    var attachment: IAttachment?
-    var beforeSend: String?
-    var afterSend: String?
-    var customField: String?
-    var fromUser: Boolean?
-    var collectType: String? /* 'string' | 'number' | 'tel' | 'email' | 'password' | 'file' | 'date' | 'native' | 'quickReply' */
-    var collectPattern: Any?
-    var delay: Number?
+interface IChatMessage {
+    val id: String
+    val text: String
+    val translations: Map<String, String>?
+    val epoch: Number?
+    val attachment: IAttachment?
+    val beforeSend: String?
+    val afterSend: String?
+    val customField: String?
+    val fromUser: Boolean?
+    val collectType: String? /* 'string' | 'number' | 'tel' | 'email' | 'password' | 'file' | 'date' | 'native' | 'quickReply' */
+    val collectPattern: Any?
+    val delay: Number?
 }
 
-interface IMessage : ChatMessage {
-    override var id: String
-    override var text: String
-    override var translations: Map<String, String>?
-    override var epoch: Number?
-    override var attachment: IAttachment?
-    override var beforeSend: String?
-    override var afterSend: String?
-    override var customField: String?
-    var collect: String?
-    var nextCodeFunction: String?
-    var nextOptions: Array<INextOption>?
-    var next: String? /* String? | "complete" */
-    override var fromUser: Boolean?
-    override var collectType: String? /* 'string' | 'number' | 'tel' | 'email' | 'password' | 'file' | 'date' | 'native' | 'quickReply' */
-    override var collectPattern: Any?
-    override var delay: Number?
+interface IMessage : IChatMessage {
+    override val id: String
+    override val text: String
+    override val translations: Map<String, String>?
+    override val epoch: Number?
+    override val attachment: IAttachment?
+    override val beforeSend: String?
+    override val afterSend: String?
+    override val customField: String?
+    val collect: String?
+    val nextCodeFunction: String?
+    val nextOptions: MutableList<INextOption>?
+    val next: String? /* String? | "complete" */
+    override val fromUser: Boolean?
+    override val collectType: String? /* 'string' | 'number' | 'tel' | 'email' | 'password' | 'file' | 'date' | 'native' | 'quickReply' */
+    override val collectPattern: Any?
+    override val delay: Number?
 }
