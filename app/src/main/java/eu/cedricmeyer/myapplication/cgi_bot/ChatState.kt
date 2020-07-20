@@ -13,6 +13,8 @@ interface IChatState {
     val defaultLang: String?
     val chatId: String?
     fun setChatbot(chatbot: IChatbot)
+    val variablesNames: List<String?>?
+    val values: MutableMap<String, Any?>
 }
 
 interface IPublicChatState {
@@ -21,7 +23,7 @@ interface IPublicChatState {
     val name: String?
     val description: String?
     val picture: String?
-    val variableNames: MutableList<String>?
+    val variableNames: List<String?>?
 }
 
 class PublicChatState(
@@ -30,16 +32,18 @@ class PublicChatState(
     override val name: String?,
     override val description: String?,
     override val picture: String?,
-    override val variableNames: MutableList<String>?
+    override val variableNames: List<String?>?
 ) : IPublicChatState
 
 class ChatState(
-    override var isWritting: Boolean,
-    override var chatMessages: MutableList<IChatMessage>,
-    override var currentChatbot: IChatbot?,
-    override var varData: Any,
-    var previousBotMessageId: String?
+    override var isWritting: Boolean = false,
+    override var chatMessages: MutableList<IChatMessage> = mutableListOf(),
+    override var currentChatbot: IChatbot? = null,
+    override var varData: MutableMap<String, Any> = mutableMapOf(),
+    previousBotMessageId: String? = null
 ) : IChatState {
+
+    override var lastBotMessageId: String? = previousBotMessageId
 
     override val name: String?
         get() = this.currentChatbot?.name
@@ -59,14 +63,66 @@ class ChatState(
     override val lastBotMessageExists: Boolean
         get() = this.currentChatbot !== null && this.lastBotMessageId !== null
 
-    override val lastBotMessageId: String? = null
+    override val values: MutableMap<String, Any?>
+        get() {
+            val vars: MutableMap<String, Any?> = mutableMapOf()
+            val variableIds: MutableSet<String> = this.varData.keys
+            // Get the name of the var
+            this.variablesNames?.forEach { variable: String? ->
+                vars[variable!!] = if (variableIds.contains(variable) && this.varData.containsKey(variable)) this.varData[variable] else null
+            }
+            return vars
+        }
 
-    init {
-//        this.lastBotMessageId = previousBotMessageId
+    override val variablesNames: List<String?>?
+        get() {
+            return this.currentChatbot?.messages
+                ?.filter { msg: IMessage -> msg.collect !== null }
+                ?.map { msg: IMessage -> msg.collect}
+                ?.distinct()
+        }
+
+    fun findChatbotMessageById(id: String): IMessage {
+        val msg = this.currentChatbot?.messages
+            ?.filter { message: IMessage -> message.id === id }
+            ?.get(0)
+        if (msg === null) {
+            throw Error("Message with id ['${id}'] not found")
+        }
+        return msg
+    }
+    fun findMessageIndexById(id: String): Number {
+        val messages: List<IMessage>? = this.currentChatbot?.messages
+        if (messages === null) {
+            throw Error("No messages found in the conversation")
+        }
+        messages.forEach { option: IMessage ->
+        }
+        return -1
+    }
+    fun findMessageByIndex(messageIndex: Int): IMessage {
+        val message: IMessage? = this.currentChatbot?.messages?.get(messageIndex)
+        if (message === null) {
+            throw Error("No message found at index [${messageIndex}] in the conversation")
+        }
+        return message
     }
 
     override fun setChatbot(chatbot: IChatbot) {
         TODO("Not yet implemented")
+    }
+
+    fun getValue(name: String): Any? {
+        return this.varData[name]
+    }
+
+    fun setValue(name: String, value: Any) {
+        this.varData.set(name, value)
+    }
+
+    fun completeChat() {
+        this.currentChatbot = null
+        this.lastBotMessageId = null
     }
 
 }

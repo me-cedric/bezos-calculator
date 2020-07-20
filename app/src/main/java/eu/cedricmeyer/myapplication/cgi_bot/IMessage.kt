@@ -33,3 +33,9 @@ interface IMessage : IChatMessage {
     override val collectPattern: Any?
     override val delay: Number?
 }
+
+interface IClientMessage {
+    var message: String
+    var hidden: Any? /* Boolean? | String */
+    var file: String?
+}

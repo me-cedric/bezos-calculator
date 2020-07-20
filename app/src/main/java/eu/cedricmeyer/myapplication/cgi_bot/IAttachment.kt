@@ -1,6 +1,6 @@
 package eu.cedricmeyer.myapplication.cgi_bot
 
-interface Attachment {
+interface IAttachment {
     val title: String
     val value: Any? /* String? | MutableList<String>? */
     val multiple: Boolean?

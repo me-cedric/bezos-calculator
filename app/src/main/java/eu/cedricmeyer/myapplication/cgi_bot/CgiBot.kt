@@ -42,10 +42,45 @@ class CgiBot(
 
     fun addMessage(chatMessage: IChatMessage) {
         this.chatState.chatMessages.add(chatMessage)
-        if (!chatMessage.fromUser) {
-            this.chatState.previousBotMessageId = chatMessage.id
+        if (!chatMessage.fromUser!!) {
+            this.chatState.lastBotMessageId = chatMessage.id
         }
-        this.raiseChangedEvent(this.chatState)
+//        this.raiseChangedEvent(this.chatState)
+    }
+
+    fun addDialog(dialog: IChatbot) {
+        // add the actual dialog
+        this.config.chatbots.add(dialog)
+    }
+
+    // async
+    fun sendMessage(( message, hidden, file ): IClientMessage): Promise {
+//        this.analytics.track('message-received')
+//        if (hidden !== true) {
+//            this.analytics.track('massage-hidden')
+//            const chatMessage: ChatMessage = {
+//                id: shortid.generate(),
+//                text: hidden === 'password' ? '••••••••••' : message,
+//                attachment: {
+//                    title: 'file',
+//                    value: file
+//            },
+//                fromUser: true,
+//                epoch: moment().unix()
+//            }
+//            this.addMessage(chatMessage)
+//        }
+//        if (!this.isMessageBeingHandled) {
+//            // Handle the current step
+//            this.messageBeingHandled = true
+//            if (this.chatState.lastBotMessageExists) {
+//                await this.runPreviousCheck(file || message)
+//                this.messageBeingHandled = false
+//                return
+//            }
+//            await this.testTrigger(message)
+//            this.messageBeingHandled = false
+//        }
     }
 
     private fun raiseChangedEvent(chatState: IChatState) {
