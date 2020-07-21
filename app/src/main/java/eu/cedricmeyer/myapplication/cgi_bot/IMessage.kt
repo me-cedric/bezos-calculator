@@ -49,6 +49,34 @@ interface IMessage : IChatMessage {
     override val delay: Number?
 }
 
+class Message(
+    msg: IMessage
+): IMessage {
+    override val id: String = msg.id
+    override val text: String = msg.text
+    override val translations = msg.translations
+    override val epoch = msg.epoch
+    override val attachment = msg.attachment
+    override val beforeSend = msg.beforeSend
+    override val afterSend = msg.afterSend
+    override val customField = msg.customField
+    override val collect = msg.collect
+    override val nextCodeFunction = msg.nextCodeFunction
+    override val nextOptions = msg.nextOptions
+    override val next = msg.next ?: "complete"
+    override val fromUser = msg.fromUser
+    override val collectType = msg.collectType ?: "string"
+    override val collectPattern = msg.collectPattern
+    override val delay = msg.delay ?: 0
+
+    fun getLocaleText(locale: String, defaultLocale: String = "en-US"): String {
+        if (defaultLocale === locale) {
+            return this.text
+        }
+        return this.translations?.get(locale) ?: this.text
+    }
+}
+
 interface IClientMessage {
     var message: String
     var hidden: Any? /* Boolean? | String */

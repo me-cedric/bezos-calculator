@@ -6,12 +6,25 @@ interface IChatbot {
     val name: String
     val description: String? // description of the script
     val defaultLanguage: String? // default language code of the chatbot
-    val otherLanguages: Collection<String>? // default language code of the chatbot
+    val otherLanguages: MutableList<String>? // default language code of the chatbot
     val updatedAt: String? // UTC date
     val isFallback: Boolean? // is the default script to use if nothing else is matched
     val triggers: MutableList<ITrigger>? // what text/message should trigger a conversation
     val messages: MutableList<IMessage>? // Threads/branch of the script that can reference each one
 }
+
+data class Chatbot(
+    override var objectId: String? = null,
+    override var picture: String? = null,
+    override var name: String,
+    override var description: String? = null,
+    override var defaultLanguage: String = "en-US",
+    override var otherLanguages: MutableList<String> = mutableListOf(),
+    override var updatedAt: String? = null,
+    override var isFallback: Boolean = false,
+    override var triggers: MutableList<ITrigger> = mutableListOf(),
+    override var messages: MutableList<IMessage> = mutableListOf()
+) : IChatbot
 
 interface IChatbotTriggers {
     val trigger: ITrigger

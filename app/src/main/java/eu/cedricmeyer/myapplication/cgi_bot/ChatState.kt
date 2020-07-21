@@ -3,7 +3,7 @@ package eu.cedricmeyer.myapplication.cgi_bot
 interface IChatState {
     val isWritting: Boolean
     val chatMessages: MutableList<IChatMessage>
-    val currentChatbot: IChatbot?
+    val currentChatbot: Chatbot?
     val varData: Any
     val lastBotMessageId: String?
     val lastBotMessageExists: Boolean
@@ -12,7 +12,7 @@ interface IChatState {
     val picture: String?
     val defaultLang: String?
     val chatId: String?
-    fun setChatbot(chatbot: IChatbot)
+    fun setChatbot(chatbot: Chatbot)
     val variablesNames: List<String?>?
     val values: MutableMap<String, Any?>
 }
@@ -38,7 +38,7 @@ class PublicChatState(
 class ChatState(
     override var isWritting: Boolean = false,
     override var chatMessages: MutableList<IChatMessage> = mutableListOf(),
-    override var currentChatbot: IChatbot? = null,
+    override var currentChatbot: Chatbot? = null,
     override var varData: MutableMap<String, Any> = mutableMapOf(),
     previousBotMessageId: String? = null
 ) : IChatState {
@@ -51,8 +51,8 @@ class ChatState(
     override val chatId: String?
         get() = this.currentChatbot?.objectId
 
-    override val defaultLang: String?
-        get() = this.currentChatbot?.defaultLanguage
+    override val defaultLang: String
+        get() = this.currentChatbot?.defaultLanguage ?: "en-US"
 
     override val picture: String?
         get() = this.currentChatbot?.picture
@@ -82,33 +82,38 @@ class ChatState(
                 ?.distinct()
         }
 
-    fun findChatbotMessageById(id: String): IMessage {
-        val msg = this.currentChatbot?.messages
+    fun findChatbotMessageById(id: String?): Message {
+        val msg: IMessage? = this.currentChatbot?.messages
             ?.filter { message: IMessage -> message.id === id }
             ?.get(0)
         if (msg === null) {
             throw Error("Message with id ['${id}'] not found")
         }
-        return msg
+        return Message(msg)
     }
-    fun findMessageIndexById(id: String): Number {
+
+    fun findMessageIndexById(id: String): Int {
         val messages: List<IMessage>? = this.currentChatbot?.messages
         if (messages === null) {
             throw Error("No messages found in the conversation")
         }
-        messages.forEach { option: IMessage ->
+        messages.forEachIndexed { index: Int, message: IMessage ->
+            if (message.id === id) {
+                return index
+            }
         }
         return -1
     }
-    fun findMessageByIndex(messageIndex: Int): IMessage {
+
+    fun findMessageByIndex(messageIndex: Int): Message {
         val message: IMessage? = this.currentChatbot?.messages?.get(messageIndex)
         if (message === null) {
             throw Error("No message found at index [${messageIndex}] in the conversation")
         }
-        return message
+        return Message(message)
     }
 
-    override fun setChatbot(chatbot: IChatbot) {
+    override fun setChatbot(chatbot: Chatbot) {
         TODO("Not yet implemented")
     }
 
