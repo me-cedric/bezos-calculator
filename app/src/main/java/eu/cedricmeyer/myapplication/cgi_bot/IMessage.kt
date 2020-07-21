@@ -15,6 +15,21 @@ interface IChatMessage {
     val delay: Number?
 }
 
+data class ChatMessage(
+    override val id: String,
+    override val text: String,
+    override val translations: Map<String, String>? = null,
+    override val epoch: Number? = null,
+    override val attachment: IAttachment? = null,
+    override val beforeSend: String? = null,
+    override val afterSend: String? = null,
+    override val customField: String? = null,
+    override val fromUser: Boolean? = false,
+    override val collectType: String? = null,
+    override val collectPattern: Any? = null,
+    override val delay: Number? = 0
+) : IChatMessage
+
 interface IMessage : IChatMessage {
     override val id: String
     override val text: String
@@ -39,3 +54,8 @@ interface IClientMessage {
     var hidden: Any? /* Boolean? | String */
     var file: String?
 }
+data class ClientMessage(
+    override var message: String,
+    override var hidden: Any? = false,
+    override var file: String? = null
+) : IClientMessage

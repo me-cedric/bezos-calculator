@@ -13,6 +13,13 @@ interface IChatbot {
     val messages: MutableList<IMessage>? // Threads/branch of the script that can reference each one
 }
 
+interface IChatbotTriggers {
+    val trigger: ITrigger
+    val chatbotId: String
+}
+
+data class ChatbotTriggers(override val trigger: ITrigger, override val chatbotId: String) : IChatbotTriggers
+
 interface ITrigger {
     val pattern: String // the text or pattern match in a message that should trigger a dialog
     val type: TriggerType // should be matched as a string or a regex

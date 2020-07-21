@@ -15,11 +15,11 @@ class CgiBotConfiguration(
     override var language: String? = "en-US",
     override var storage: Any?,
     override var analyticsConfig: IAnalyticsConfig?,
-    override var disableConsole: Boolean?,
-    override var nextFunctions: Map<String, (nextCodes: MutableList<String>, variables: Any) -> String>?
+    override var disableConsole: Boolean = false,
+    override var nextFunctions: Map<String, (nextCodes: List<String>, variables: Any) -> String> = emptyMap()
 ) : ICgiBotConfiguration {
 
-    fun executeNextFunction(nextCodeFunction: String, codes: MutableList<String>, values: Any): String? {
-        return this.nextFunctions?.get(nextCodeFunction)?.invoke(codes, values)
+    fun executeNextFunction(nextCodeFunction: String, codes: List<String>, values: Any): String? {
+        return this.nextFunctions[nextCodeFunction]?.invoke(codes, values)
     }
 }
