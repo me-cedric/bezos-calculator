@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.View
 import eu.cedricmeyer.myapplication.calculator.CalculatorActivity
 import eu.cedricmeyer.myapplication.R
+import eu.cedricmeyer.myapplication.chat.ChatActivity
 
 
 class LoginActivity : AppCompatActivity() {
@@ -17,7 +18,12 @@ class LoginActivity : AppCompatActivity() {
 
     fun onLogin(view: View) {
         val intent = Intent(this, CalculatorActivity::class.java)
-        intent.putExtra("bloop", "bleep")
+        // intent.putExtra("bloop", "bleep")
+        startActivity(intent)
+    }
+
+    fun onChat(view: View) {
+        val intent = Intent(this, ChatActivity::class.java)
         startActivity(intent)
     }
 }

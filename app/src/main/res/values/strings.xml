@@ -5,4 +5,6 @@
     <string name="input_text">How much</string>
     <string name="ok">OK</string>
     <string name="login">login</string>
+    <string name="chat">Chat</string>
+    <string name="sendMsg">Send</string>
 </resources>

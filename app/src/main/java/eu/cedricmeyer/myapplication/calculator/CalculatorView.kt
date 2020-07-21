@@ -1,6 +1,5 @@
 package eu.cedricmeyer.myapplication.calculator
 
-import android.graphics.drawable.AnimationDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher

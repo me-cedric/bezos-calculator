@@ -21,6 +21,10 @@
         <activity android:name=".calculator.CalculatorActivity"
             android:screenOrientation="portrait">
         </activity>
+        <activity android:name=".chat.ChatActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
+        </activity>
     </application>
 
 </manifest>
