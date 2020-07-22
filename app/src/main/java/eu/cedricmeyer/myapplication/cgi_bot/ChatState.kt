@@ -1,25 +1,19 @@
 package eu.cedricmeyer.myapplication.cgi_bot
 
-interface IChatState {
-    val isWritting: Boolean
-    val chatMessages: MutableList<IChatMessage>
+interface IChatState: IPublicChatState {
     val currentChatbot: Chatbot?
     val varData: Any
     val lastBotMessageId: String?
     val lastBotMessageExists: Boolean
-    val name: String?
-    val description: String?
-    val picture: String?
     val defaultLang: String?
     val chatId: String?
     fun setChatbot(chatbot: Chatbot)
-    val variablesNames: List<String?>?
     val values: MutableMap<String, Any?>
 }
 
 interface IPublicChatState {
     val isWritting: Boolean
-    val chatMessages: MutableList<IChatMessage>
+    val chatMessages: MutableList<ChatMessage>
     val name: String?
     val description: String?
     val picture: String?
@@ -28,7 +22,7 @@ interface IPublicChatState {
 
 class PublicChatState(
     override val isWritting: Boolean,
-    override val chatMessages: MutableList<IChatMessage>,
+    override val chatMessages: MutableList<ChatMessage>,
     override val name: String?,
     override val description: String?,
     override val picture: String?,
@@ -37,7 +31,7 @@ class PublicChatState(
 
 class ChatState(
     override var isWritting: Boolean = false,
-    override var chatMessages: MutableList<IChatMessage> = mutableListOf(),
+    override var chatMessages: MutableList<ChatMessage> = mutableListOf(),
     override var currentChatbot: Chatbot? = null,
     override var varData: MutableMap<String, Any> = mutableMapOf(),
     previousBotMessageId: String? = null
@@ -68,13 +62,13 @@ class ChatState(
             val vars: MutableMap<String, Any?> = mutableMapOf()
             val variableIds: MutableSet<String> = this.varData.keys
             // Get the name of the var
-            this.variablesNames?.forEach { variable: String? ->
+            this.variableNames?.forEach { variable: String? ->
                 vars[variable!!] = if (variableIds.contains(variable) && this.varData.containsKey(variable)) this.varData[variable] else null
             }
             return vars
         }
 
-    override val variablesNames: List<String?>?
+    override val variableNames: List<String?>?
         get() {
             return this.currentChatbot?.messages
                 ?.filter { msg: Message -> msg.collect !== null }
@@ -98,7 +92,7 @@ class ChatState(
             throw Error("No messages found in the conversation")
         }
         messages.forEachIndexed { index: Int, message: Message ->
-            if (message.id === id) {
+            if (message.id == id) {
                 return index
             }
         }
@@ -114,7 +108,8 @@ class ChatState(
     }
 
     override fun setChatbot(chatbot: Chatbot) {
-        TODO("Not yet implemented")
+        this.varData = mutableMapOf() // reset
+        this.currentChatbot = chatbot
     }
 
     fun getValue(name: String): Any? {

@@ -5,15 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.beust.klaxon.Klaxon
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import eu.cedricmeyer.myapplication.R
-import eu.cedricmeyer.myapplication.cgi_bot.CgiBot
-import eu.cedricmeyer.myapplication.cgi_bot.CgiBotConfiguration
-import eu.cedricmeyer.myapplication.cgi_bot.Chatbot
-import io.ktor.http.ContentDisposition.Companion.File
-import java.io.File
+import eu.cedricmeyer.myapplication.cgi_bot.*
 import java.io.InputStream
 
 class ChatView : Fragment() {
@@ -29,9 +24,21 @@ class ChatView : Fragment() {
 
         val test: InputStream? = context?.resources?.openRawResource(+ R.raw.testchat)
         val mapper = jacksonObjectMapper()
-        var chat: Chatbot = mapper.readValue<Chatbot>(test, object : TypeReference<Chatbot>(){})
-        val config: CgiBotConfiguration = CgiBotConfiguration(chatbots = mutableListOf(chat))
-//        val chatbot: CgiBot = CgiBot()
+        val chat: Chatbot = mapper.readValue<Chatbot>(test, object : TypeReference<Chatbot>(){})
+        val nextFcts: Map<String, (nextCodes: List<String>, variables: Any) -> String>? =
+            mapOf("verifySms" to ::verifySms)
+        val config = CgiBotConfiguration(chatbots = mutableListOf(chat), nextFunctions = nextFcts)
+        val chatbot = CgiBot(config)
+        chatbot.onChatChange { chatResponses: PublicChatState ->
+            println("!!-------------------------------------------------------------------------!!")
+            println(chatResponses.toString())
+        }
+        val message = ClientMessage("onboarding")
+        chatbot.sendMessage(message)
+    }
+
+    fun verifySms(nextCodes: List<String>, variables: Any): String {
+        return nextCodes[1]
     }
 
     companion object {

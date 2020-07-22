@@ -3,21 +3,13 @@ package eu.cedricmeyer.myapplication.cgi_bot
 import io.ktor.mustache.MustacheContent
 import java.util.*
 
-interface ICgiBot {
-    val analytics: Any
-    val bootCompleteHandlers: List<() -> Any>
-    val booted: Boolean
-    val config: ICgiBotConfiguration
-    val chatStateChangedCallback: ((chatResponses: IPublicChatState) -> Any)?
-}
-
 class CgiBot(
     private var config: CgiBotConfiguration,
-    private var analytics: Any = Analytics(config.analyticsConfig),
     private var bootCompleteHandlers: MutableList<(cgiBot: CgiBot) -> Any> = mutableListOf()
 ) {
+    private var analytics: Any = Analytics(config.analyticsConfig)
     private var booted: Boolean = false
-    private var chatStateChangedCallback: ((chatResponses: IPublicChatState) -> Any)? = null
+    private var chatStateChangedCallback: ((chatResponses: PublicChatState) -> Any)? = null
     private var chatState = ChatState()
         set(value) {
             if (this.chatState !== value) {
@@ -41,7 +33,7 @@ class CgiBot(
         this.config.language = lang.toUpperCase(Locale.getDefault())
     }
 
-    fun addMessage(chatMessage: IChatMessage) {
+    fun addMessage(chatMessage: ChatMessage) {
         this.chatState.chatMessages.add(chatMessage)
         if (!chatMessage.fromUser!!) {
             this.chatState.lastBotMessageId = chatMessage.id
@@ -49,12 +41,12 @@ class CgiBot(
 //        this.raiseChangedEvent(this.chatState)
     }
 
-    fun onChatChange(callback: (chatResponses: IPublicChatState) -> Any) {
+    fun onChatChange(callback: (chatResponses: PublicChatState) -> Any) {
         this.chatStateChangedCallback = callback
     }
 
     private fun raiseChangedEvent(chatState: IChatState) {
-        this.chatStateChangedCallback?.invoke(PublicChatState(chatState.isWritting, chatState.chatMessages, chatState.name, chatState.description, chatState.picture, chatState.variablesNames))
+        this.chatStateChangedCallback?.invoke(PublicChatState(chatState.isWritting, chatState.chatMessages, chatState.name, chatState.description, chatState.picture, chatState.variableNames))
     }
 
     fun ready(handler: (cgiBot: CgiBot) -> Any) {
@@ -82,7 +74,7 @@ class CgiBot(
 
         if (hidden != true) {
             // todo this.analytics.track('massage-hidden')
-            val chatMessage: IChatMessage = ChatMessage(
+            val chatMessage = ChatMessage(
                 id = ShortId.generate(),
                 text = if (hidden === "password") "••••••••••" else message,
                 attachment = Attachment(
@@ -221,7 +213,9 @@ class CgiBot(
         val message: Message = this.chatState.findChatbotMessageById(this.chatState.lastBotMessageId)
         // todo this.analytics.track('previous-check', { message })
         // Capture the user input value into the array
-        this.chatState.setValue(message.collect!!, result)
+        if (message.collect !== null) {
+            this.chatState.setValue(message.collect, result)
+        }
         if (message.next === "complete") {
             // todo this.analytics.track('next-complete')
             return this.chatState.completeChat()
