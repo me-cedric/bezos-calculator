@@ -9,10 +9,19 @@ interface INextOption {
     val validationCode: String?
     val nextMessage: String?
 }
+data class NextOption(
+    override val varId: String?,
+    override val default: Boolean?,
+    override val pattern: String?,
+    override val type: String?,
+    override val handler: String?,
+    override val validationCode: String?,
+    override val nextMessage: String?
+) : INextOption
 
 open class NextFinder(
-    var options: MutableList<INextOption>,
-    var config: CgiBotConfiguration
+    private var options: MutableList<NextOption>,
+    private var config: CgiBotConfiguration
 ) {
     open fun findNextFromCode(nextCodeFunction: String, chatState: ChatState): String? {
         var path: String? = null

@@ -1,5 +1,7 @@
 package eu.cedricmeyer.myapplication.cgi_bot
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+
 interface IChatMessage {
     val id: String
     val text: String
@@ -35,13 +37,13 @@ interface IMessage : IChatMessage {
     override val text: String
     override val translations: Map<String, String>?
     override val epoch: Number?
-    override val attachment: IAttachment?
+    override val attachment: Attachment?
     override val beforeSend: String?
     override val afterSend: String?
     override val customField: String?
     val collect: String?
     val nextCodeFunction: String?
-    val nextOptions: MutableList<INextOption>?
+    val nextOptions: MutableList<NextOption>?
     val next: String? /* String? | "complete" */
     override val fromUser: Boolean?
     override val collectType: String? /* 'string' | 'number' | 'tel' | 'email' | 'password' | 'file' | 'date' | 'native' | 'quickReply' */
@@ -49,25 +51,43 @@ interface IMessage : IChatMessage {
     override val delay: Number?
 }
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 class Message(
-    msg: IMessage
+    override val id: String,
+    override val text: String,
+    override val translations: Map<String, String>?,
+    override val epoch: Number?,
+    override val attachment: Attachment?,
+    override val beforeSend: String?,
+    override val afterSend: String?,
+    override val customField: String?,
+    override val collect: String?,
+    override val nextCodeFunction: String?,
+    override val nextOptions: MutableList<NextOption>?,
+    override val next: String? = "complete",
+    override val fromUser: Boolean?,
+    override val collectType: String? = "string",
+    override val collectPattern: Any?,
+    override val delay: Number? = 0
 ): IMessage {
-    override val id: String = msg.id
-    override val text: String = msg.text
-    override val translations = msg.translations
-    override val epoch = msg.epoch
-    override val attachment = msg.attachment
-    override val beforeSend = msg.beforeSend
-    override val afterSend = msg.afterSend
-    override val customField = msg.customField
-    override val collect = msg.collect
-    override val nextCodeFunction = msg.nextCodeFunction
-    override val nextOptions = msg.nextOptions
-    override val next = msg.next ?: "complete"
-    override val fromUser = msg.fromUser
-    override val collectType = msg.collectType ?: "string"
-    override val collectPattern = msg.collectPattern
-    override val delay = msg.delay ?: 0
+    constructor(msg: IMessage): this(
+        msg.id,
+        msg.text,
+        msg.translations,
+        msg.epoch,
+        msg.attachment,
+        msg.beforeSend,
+        msg.afterSend,
+        msg.customField,
+        msg.collect,
+        msg.nextCodeFunction,
+        msg.nextOptions,
+        msg.next,
+        msg.fromUser,
+        msg.collectType,
+        msg.collectPattern,
+        msg.delay
+    )
 
     fun getLocaleText(locale: String, defaultLocale: String = "en-US"): String {
         if (defaultLocale === locale) {

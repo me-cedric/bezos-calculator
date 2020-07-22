@@ -72,7 +72,7 @@ class CgiBot(
 
     fun addDialog(dialog: Chatbot) {
         // add the actual dialog
-        this.config.chatbots.add(dialog)
+        this.config.chatbots?.add(dialog)
     }
 
     // async
@@ -111,8 +111,8 @@ class CgiBot(
         // todo this.analytics.track('trigger-evaluation')
         fun mapTriggers(chatbots: MutableList<Chatbot>?): MutableList<ChatbotTriggers> {
             val triggers: MutableList<ChatbotTriggers> = mutableListOf()
-            chatbots?.forEach{ chatbot: IChatbot? ->
-                chatbot?.triggers?.forEach { trigger: ITrigger ->
+            chatbots?.forEach{ chatbot: Chatbot? ->
+                chatbot?.triggers?.forEach { trigger: Trigger ->
                     triggers.add(
                         ChatbotTriggers(
                             trigger = trigger,
@@ -126,7 +126,7 @@ class CgiBot(
             return triggers
         }
         val res: MutableList<String> = mutableListOf()
-        val bots: MutableList<Chatbot> = this.config.chatbots
+        val bots: MutableList<Chatbot>? = this.config.chatbots
         val chatTriggers: MutableList<ChatbotTriggers> = mapTriggers(bots)
 
         // check regular expressions or keywords
@@ -134,7 +134,7 @@ class CgiBot(
             val ( trigger ) = triggerData
             var found: Any = false
             try {
-                val test = Regex(if (trigger.type === TriggerType.REGEX) trigger.pattern else "^${trigger.pattern}\\b", RegexOption.IGNORE_CASE)
+                val test = Regex(if (trigger.type == TriggerType.REGEX) trigger.pattern else "^${trigger.pattern}\\b", RegexOption.IGNORE_CASE)
                 found = text.matches(test)
             } catch (err: Error) {
                 // todo this.analytics.track('trigger-regex-error')
@@ -149,7 +149,7 @@ class CgiBot(
         // check for no results...
         if (res.size == 0) {
             // find a script set with is_fallback true
-            bots.forEach {chatbot: IChatbot ->
+            bots?.forEach {chatbot: IChatbot ->
                 if (chatbot.isFallback !== null) {
                     res.add(chatbot.objectId!!)
                 }
@@ -158,7 +158,7 @@ class CgiBot(
 
         if (res.size > 0) {
             // this is the script that will be triggered.
-            return bots.filter { chatbot: Chatbot -> chatbot.objectId === res[0] }[0]
+            return bots?.filter { chatbot: Chatbot -> chatbot.objectId === res[0] }?.get(0)
         }
         return null
     }
@@ -251,7 +251,7 @@ class CgiBot(
         return path
     }
 
-    private /*async*/ fun checkNextFunction(message: Message, options: MutableList<INextOption>): String? {
+    private /*async*/ fun checkNextFunction(message: Message, options: MutableList<NextOption>): String? {
         val finder = NextFinder(options, this.config)
         // If the options should return a function validation
         if (message.nextCodeFunction != null) {

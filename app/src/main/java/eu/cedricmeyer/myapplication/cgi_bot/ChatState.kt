@@ -77,14 +77,14 @@ class ChatState(
     override val variablesNames: List<String?>?
         get() {
             return this.currentChatbot?.messages
-                ?.filter { msg: IMessage -> msg.collect !== null }
-                ?.map { msg: IMessage -> msg.collect}
+                ?.filter { msg: Message -> msg.collect !== null }
+                ?.map { msg: Message -> msg.collect}
                 ?.distinct()
         }
 
     fun findChatbotMessageById(id: String?): Message {
-        val msg: IMessage? = this.currentChatbot?.messages
-            ?.filter { message: IMessage -> message.id === id }
+        val msg: Message? = this.currentChatbot?.messages
+            ?.filter { message: Message -> message.id === id }
             ?.get(0)
         if (msg === null) {
             throw Error("Message with id ['${id}'] not found")
@@ -93,11 +93,11 @@ class ChatState(
     }
 
     fun findMessageIndexById(id: String): Int {
-        val messages: List<IMessage>? = this.currentChatbot?.messages
+        val messages: List<Message>? = this.currentChatbot?.messages
         if (messages === null) {
             throw Error("No messages found in the conversation")
         }
-        messages.forEachIndexed { index: Int, message: IMessage ->
+        messages.forEachIndexed { index: Int, message: Message ->
             if (message.id === id) {
                 return index
             }
@@ -106,7 +106,7 @@ class ChatState(
     }
 
     fun findMessageByIndex(messageIndex: Int): Message {
-        val message: IMessage? = this.currentChatbot?.messages?.get(messageIndex)
+        val message: Message? = this.currentChatbot?.messages?.get(messageIndex)
         if (message === null) {
             throw Error("No message found at index [${messageIndex}] in the conversation")
         }
