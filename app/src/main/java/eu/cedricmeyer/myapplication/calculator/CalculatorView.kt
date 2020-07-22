@@ -1,12 +1,17 @@
-package eu.cedricmeyer.myapplication
+package eu.cedricmeyer.myapplication.calculator
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import kotlinx.android.synthetic.main.activity_main.*
+import androidx.fragment.app.Fragment
+import eu.cedricmeyer.myapplication.CustomAlertDialogOneButton
+import eu.cedricmeyer.myapplication.OnAlertOneButtonClickListener
+import eu.cedricmeyer.myapplication.R
+import kotlinx.android.synthetic.main.fragment_calculator.*
 import java.math.BigDecimal
 
 enum class CurrencyValue(val value: Double) {
@@ -14,25 +19,29 @@ enum class CurrencyValue(val value: Double) {
     Dollar(1.0)
 }
 
-class MainActivity : AppCompatActivity(), OnAlertOneButtonClickListener {
+class CalculatorView : Fragment(),
+    OnAlertOneButtonClickListener {
 
     private val bezosWorth: Double = 160_000_000_000.0 // dollars
 
     private val customDialogOneButton by lazy {
-        CustomAlertDialogOneButton(this, this)
+        CustomAlertDialogOneButton(activity, this)
     }
 
     override fun okClickListener(dialogId: Int) {
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_calculator, container, false)
+    }
 
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         ArrayAdapter.createFromResource(
-            this,
+            view.context,
             R.array.currency_array,
             android.R.layout.simple_spinner_item
         ).also { adapter ->
@@ -59,12 +68,7 @@ class MainActivity : AppCompatActivity(), OnAlertOneButtonClickListener {
         })
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressed()
-        return true
-    }
-
-    fun onCompute(view: View) {
+    fun onCompute() {
         val spinnerVal = spinner.selectedItem.toString()
         var modifier: Double = 1.0
         when(spinnerVal) {
@@ -78,5 +82,11 @@ class MainActivity : AppCompatActivity(), OnAlertOneButtonClickListener {
             dialogId = 1,
             buttonName = "Bah... it's not that much then."
         )
+    }
+
+    companion object {
+        @JvmStatic
+        fun newInstance() =
+            CalculatorView()
     }
 }

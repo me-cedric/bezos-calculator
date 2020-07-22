@@ -45,6 +45,12 @@
                 android:layout_height="wrap_content"
                 android:onClick="onLogin"
                 android:text="@string/login" />
+            <Button
+                android:id="@+id/buttonChat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onChat"
+                android:text="@string/chat" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
