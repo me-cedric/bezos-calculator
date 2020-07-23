@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="optionID"
+            type="Integer" />
+        <variable
+            name="viewModel"
+            type="eu.cedricmeyer.myapplication.chat.ChatViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/list_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="@{() -> viewModel.toggle(optionID)}"
+        android:minHeight="44dp">
+
+        <androidx.appcompat.widget.AppCompatRadioButton
+            android:id="@+id/item_label"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:checked="@{safeUnbox(optionID) == safeUnbox(viewModel.selectedID)}"
+            android:clickable="false"
+            android:text="Label"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

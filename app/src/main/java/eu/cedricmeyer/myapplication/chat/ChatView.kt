@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import eu.cedricmeyer.myapplication.R
@@ -12,6 +14,11 @@ import eu.cedricmeyer.myapplication.cgi_bot.*
 import java.io.InputStream
 
 class ChatView : Fragment() {
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val viewModel: ChatViewModel by viewModels {
+        viewModelFactory
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -19,26 +26,25 @@ class ChatView : Fragment() {
         return inflater.inflate(R.layout.fragment_chat, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
 
-        val test: InputStream? = context?.resources?.openRawResource(+ R.raw.testchat)
-        val mapper = jacksonObjectMapper()
-        val chat: Chatbot = mapper.readValue<Chatbot>(test, object : TypeReference<Chatbot>(){})
-        val nextFcts: Map<String, (nextCodes: List<String>, variables: Any) -> String>? =
-            mapOf("verifySms" to ::verifySms)
-        val config = CgiBotConfiguration(chatbots = mutableListOf(chat), nextFunctions = nextFcts, language = "fr-FR")
-        val chatbot = CgiBot(config)
-        chatbot.onChatChange { chatResponses: PublicChatState ->
-            println("!!-------------------------------------------------------------------------!!")
-            chatResponses.chatMessages.forEach { msg -> println(msg.text) }
+        adapter = MainListAdapter(
+            appExecutors = appExecutors,
+            viewModel = viewModel
+        )
+
+        binding.recyclerView.adapter = adapter
+
+        binding.recyclerView.apply {
+            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
         }
-        val message = ClientMessage("onboarding")
-        chatbot.sendMessage(message)
+
+        adapter.submitList((1..100).toList())
     }
 
-    private fun verifySms(nextCodes: List<String>, variables: Any): String {
-        return nextCodes[1]
+    override fun onDestroyView() {
+        super.onDestroyView()
     }
 
     companion object {
