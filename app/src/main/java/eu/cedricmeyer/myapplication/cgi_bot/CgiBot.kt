@@ -10,7 +10,7 @@ class CgiBot(
     private var analytics: Any = Analytics(config.analyticsConfig)
     private var booted: Boolean = false
     private var chatStateChangedCallback: ((chatResponses: PublicChatState) -> Any)? = null
-    private var chatState = ChatState()
+    private var chatState = ChatState(onChange = {chatData -> this.raiseChangedEvent(chatData)})
         set(value) {
             if (this.chatState !== value) {
                 this.raiseChangedEvent(value)
@@ -34,7 +34,7 @@ class CgiBot(
     }
 
     fun addMessage(chatMessage: ChatMessage) {
-        this.chatState.chatMessages.add(chatMessage)
+        this.chatState.addMessage(chatMessage)
         if (!chatMessage.fromUser!!) {
             this.chatState.lastBotMessageId = chatMessage.id
         }
@@ -173,6 +173,7 @@ class CgiBot(
     private /*async*/ fun runStep(messageIndex: Int) {
         // Get the next mesage.
         val message: Message = this.chatState.findMessageByIndex(messageIndex)
+        println(message.text)
         // todo this.analytics.track('running-step', { message })
         // todo /*await*/ this.toggleTyping(message.delay)
         val chatMessage = ChatMessage(
@@ -185,7 +186,7 @@ class CgiBot(
             collectType = message.collectType,
             collectPattern = message.collectPattern,
             delay = message.delay,
-            text = MustacheContent(message.getLocaleText(this.locale, this.chatState.defaultLang), this.chatState.values).toString(),
+            text = MustacheContent(message.getLocaleText(this.locale, this.chatState.defaultLang), this.chatState.values).template,
             fromUser = false,
             epoch = (System.currentTimeMillis() / 1000)
         )

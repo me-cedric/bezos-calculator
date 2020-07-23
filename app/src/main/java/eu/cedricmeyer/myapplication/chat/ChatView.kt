@@ -27,17 +27,17 @@ class ChatView : Fragment() {
         val chat: Chatbot = mapper.readValue<Chatbot>(test, object : TypeReference<Chatbot>(){})
         val nextFcts: Map<String, (nextCodes: List<String>, variables: Any) -> String>? =
             mapOf("verifySms" to ::verifySms)
-        val config = CgiBotConfiguration(chatbots = mutableListOf(chat), nextFunctions = nextFcts)
+        val config = CgiBotConfiguration(chatbots = mutableListOf(chat), nextFunctions = nextFcts, language = "fr-FR")
         val chatbot = CgiBot(config)
         chatbot.onChatChange { chatResponses: PublicChatState ->
             println("!!-------------------------------------------------------------------------!!")
-            println(chatResponses.toString())
+            chatResponses.chatMessages.forEach { msg -> println(msg.text) }
         }
         val message = ClientMessage("onboarding")
         chatbot.sendMessage(message)
     }
 
-    fun verifySms(nextCodes: List<String>, variables: Any): String {
+    private fun verifySms(nextCodes: List<String>, variables: Any): String {
         return nextCodes[1]
     }
 

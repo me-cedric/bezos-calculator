@@ -9,6 +9,10 @@ interface IChatState: IPublicChatState {
     val chatId: String?
     fun setChatbot(chatbot: Chatbot)
     val values: MutableMap<String, Any?>
+    fun getValue(name: String): Any?
+    fun setValue(name: String, value: Any)
+    fun addMessage(message: ChatMessage)
+    fun completeChat()
 }
 
 interface IPublicChatState {
@@ -30,12 +34,33 @@ class PublicChatState(
 ) : IPublicChatState
 
 class ChatState(
-    override var isWritting: Boolean = false,
-    override var chatMessages: MutableList<ChatMessage> = mutableListOf(),
-    override var currentChatbot: Chatbot? = null,
-    override var varData: MutableMap<String, Any> = mutableMapOf(),
-    previousBotMessageId: String? = null
+    isWritting: Boolean = false,
+    chatMessages: MutableList<ChatMessage> = mutableListOf(),
+    currentChatbot: Chatbot? = null,
+    varData: MutableMap<String, Any> = mutableMapOf(),
+    previousBotMessageId: String? = null,
+    var onChange: ((chatState: ChatState) -> Unit)? = null
 ) : IChatState {
+    override var isWritting: Boolean = isWritting
+        set(value) {
+            field = value
+            this.onChange?.invoke(this)
+        }
+
+    override var chatMessages: MutableList<ChatMessage> = chatMessages
+        private set
+
+    override var currentChatbot: Chatbot? = currentChatbot
+        set(value) {
+            field = value
+            this.onChange?.invoke(this)
+        }
+
+    override var varData: MutableMap<String, Any> = varData
+        private set(value) {
+            field = value
+            this.onChange?.invoke(this)
+        }
 
     override var lastBotMessageId: String? = previousBotMessageId
 
@@ -110,19 +135,27 @@ class ChatState(
     override fun setChatbot(chatbot: Chatbot) {
         this.varData = mutableMapOf() // reset
         this.currentChatbot = chatbot
+        this.onChange?.invoke(this)
     }
 
-    fun getValue(name: String): Any? {
+    override fun getValue(name: String): Any? {
         return this.varData[name]
     }
 
-    fun setValue(name: String, value: Any) {
-        this.varData.set(name, value)
+    override fun setValue(name: String, value: Any) {
+        this.varData[name] = value
+        this.onChange?.invoke(this)
     }
 
-    fun completeChat() {
+    override fun addMessage(message: ChatMessage) {
+        this.chatMessages.add(message)
+        this.onChange?.invoke(this)
+    }
+
+    override fun completeChat() {
         this.currentChatbot = null
         this.lastBotMessageId = null
+        this.onChange?.invoke(this)
     }
 
 }
