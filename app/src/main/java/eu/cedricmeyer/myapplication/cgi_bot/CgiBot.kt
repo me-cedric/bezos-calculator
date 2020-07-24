@@ -41,7 +41,7 @@ class CgiBot(
 //        this.raiseChangedEvent(this.chatState)
     }
 
-    fun onChatChange(callback: (chatResponses: PublicChatState) -> Any) {
+    fun onChatChange(callback: (chatResponses: PublicChatState) -> Unit) {
         this.chatStateChangedCallback = callback
     }
 
@@ -64,7 +64,7 @@ class CgiBot(
 
     fun addDialog(dialog: Chatbot) {
         // add the actual dialog
-        this.config.chatbots?.add(dialog)
+        this.config.chatbots.add(dialog)
     }
 
     // async
@@ -173,7 +173,6 @@ class CgiBot(
     private /*async*/ fun runStep(messageIndex: Int) {
         // Get the next mesage.
         val message: Message = this.chatState.findMessageByIndex(messageIndex)
-        println(message.text)
         // todo this.analytics.track('running-step', { message })
         // todo /*await*/ this.toggleTyping(message.delay)
         val chatMessage = ChatMessage(

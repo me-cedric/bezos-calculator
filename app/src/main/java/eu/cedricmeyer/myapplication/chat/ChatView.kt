@@ -6,7 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import eu.cedricmeyer.myapplication.R
@@ -14,11 +17,7 @@ import eu.cedricmeyer.myapplication.cgi_bot.*
 import java.io.InputStream
 
 class ChatView : Fragment() {
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
-    private val viewModel: ChatViewModel by viewModels {
-        viewModelFactory
-    }
+    private lateinit var chatViewViewModel: ChatViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -28,23 +27,26 @@ class ChatView : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        val chatStream: InputStream? = context?.applicationContext?.resources?.openRawResource(+ R.raw.testchat)
+        val mapper = jacksonObjectMapper()
+        val chat: Chatbot = mapper.readValue<Chatbot>(chatStream, object : TypeReference<Chatbot>(){})
+        val nextFcts: Map<String, (nextCodes: List<String>, variables: Any) -> String>? =
+            mapOf("verifySms" to ::verifySms)
+        val myViewModel: ChatViewModel by viewModels { ChatViewModelFactory(chatBots = mutableListOf(chat), nextFcts = nextFcts) }
+        chatViewViewModel = myViewModel
+        val chatState: LiveData<PublicChatState?> = chatViewViewModel.getInitialChatState()
+        chatState.observe(viewLifecycleOwner, Observer {
+//            txt1.setText("Count is "+it)
+        })
 
-        adapter = MainListAdapter(
-            appExecutors = appExecutors,
-            viewModel = viewModel
-        )
-
-        binding.recyclerView.adapter = adapter
-
-        binding.recyclerView.apply {
-            addItemDecoration(DividerItemDecoration(context, DividerItemDecoration.VERTICAL))
-        }
-
-        adapter.submitList((1..100).toList())
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    private fun verifySms(nextCodes: List<String>, variables: Any): String {
+        return nextCodes[1]
+    }
+
+    fun sendTextMessage(text : String) {
+        this.chatViewViewModel.sendTextMessage(text)
     }
 
     companion object {

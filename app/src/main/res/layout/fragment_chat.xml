@@ -47,15 +47,17 @@
                 android:layout_weight="1">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/textField"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
-                android:id="@+id/button2"
+                android:id="@+id/sendButton"
                 android:layout_width="148dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:onClick="sendMessage"
                 android:text="@string/sendMsg" />
 
         </LinearLayout>
