@@ -1,6 +1,7 @@
 package eu.cedricmeyer.myapplication.cgi_bot
 
-import io.ktor.mustache.MustacheContent
+import com.github.jknack.handlebars.Handlebars
+import com.github.jknack.handlebars.Template
 import java.util.*
 
 class CgiBot(
@@ -8,6 +9,7 @@ class CgiBot(
     private var bootCompleteHandlers: MutableList<(cgiBot: CgiBot) -> Any> = mutableListOf()
 ) {
     private var analytics: Any = Analytics(config.analyticsConfig)
+    private var handlebars: Handlebars = Handlebars()
     private var booted: Boolean = false
     private var chatStateChangedCallback: ((chatResponses: PublicChatState) -> Any)? = null
     private var chatState = ChatState(onChange = {chatData -> this.raiseChangedEvent(chatData)})
@@ -175,6 +177,8 @@ class CgiBot(
         val message: Message = this.chatState.findMessageByIndex(messageIndex)
         // todo this.analytics.track('running-step', { message })
         // todo /*await*/ this.toggleTyping(message.delay)
+        val template: Template = handlebars.compileInline(message.getLocaleText(this.locale, this.chatState.defaultLang))
+        val templateString: String = template.apply(this.chatState.values)
         val chatMessage = ChatMessage(
             id = message.id,
             translations = message.translations,
@@ -185,7 +189,7 @@ class CgiBot(
             collectType = message.collectType,
             collectPattern = message.collectPattern,
             delay = message.delay,
-            text = MustacheContent(message.getLocaleText(this.locale, this.chatState.defaultLang), this.chatState.values).template,
+            text = templateString,
             fromUser = false,
             epoch = (System.currentTimeMillis() / 1000)
         )

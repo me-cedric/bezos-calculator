@@ -41,7 +41,7 @@ open class NextFinder(
         var path: String? = null
         this.options.forEach { option: INextOption ->
             var test: Regex? = null
-            if (option.pattern !== null && (option.type === "string" || option.type === "regex")) {
+            if (option.pattern !== null && (option.type == "string" || option.type == "regex")) {
                 test = Regex(option.pattern!!, RegexOption.IGNORE_CASE)
             }
             if (test != null && option.varId !== null) {

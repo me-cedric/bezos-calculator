@@ -32,5 +32,6 @@ class ChatActivity : AppCompatActivity() {
 
     fun sendMessage(view: View) {
         this.chatView.sendTextMessage(textField.text.toString())
+        textField.text?.clear()
     }
 }

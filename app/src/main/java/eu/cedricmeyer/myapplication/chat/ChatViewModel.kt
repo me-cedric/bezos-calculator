@@ -24,10 +24,8 @@ class ChatViewModel(chatBots: MutableList<Chatbot>, nextFcts: Map<String, (nextC
         val config = CgiBotConfiguration(chatbots = chatBots, nextFunctions = nextFcts, language = "fr-FR")
         cgiBot = CgiBot(config)
         cgiBot.onChatChange { chatResponses: PublicChatState ->
-            chatState = chatResponses
+            chatStateLiveData.value = chatResponses
         }
-        val message = ClientMessage("onboarding")
-        cgiBot.sendMessage(message)
     }
 
     fun getInitialChatState(): MutableLiveData<PublicChatState?>{
@@ -35,8 +33,8 @@ class ChatViewModel(chatBots: MutableList<Chatbot>, nextFcts: Map<String, (nextC
         return chatStateLiveData
     }
 
-    fun sendTextMessage(text: String) {
-        val message = ClientMessage(text)
+    fun sendTextMessage(text: String, hidden: Any? = false) {
+        val message = ClientMessage(text, hidden)
         cgiBot.sendMessage(message)
     }
 }
