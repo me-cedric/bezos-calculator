@@ -7,8 +7,7 @@ import android.text.Editable
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
-import eu.cedricmeyer.myapplication.calculator.CalculatorActivity
-import eu.cedricmeyer.myapplication.calculator.CalculatorView
+import eu.cedricmeyer.myapplication.chat.ChatActivity
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,7 +32,7 @@ internal fun Fragment.makeToast(value: String) {
 }
 
 internal fun Fragment.restartCurrentFeature() {
-    val i = Intent(this.activity, CalculatorActivity::class.java)
+    val i = Intent(this.activity, ChatActivity::class.java)
 //    when (this) {
 //        is CalculatorView -> {
 //            i = Intent(this.activity, CalculatorActivity::class.java)

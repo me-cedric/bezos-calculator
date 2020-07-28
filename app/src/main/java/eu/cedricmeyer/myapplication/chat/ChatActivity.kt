@@ -15,12 +15,12 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_calculator)
+        setContentView(R.layout.activity_chat)
 
         this.chatView = this.supportFragmentManager.findFragmentByTag(VIEW) as ChatView?
             ?: ChatView.newInstance()
 
-        attachFragment(supportFragmentManager, R.id.root_activity_calculator, chatView, VIEW)
+        attachFragment(supportFragmentManager, R.id.root_activity_chat, chatView, VIEW)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
